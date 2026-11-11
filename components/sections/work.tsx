@@ -147,15 +147,10 @@ function WorkCard({
   const FormatIcon = filterIcons[item.format];
   const phone = item.format === "reel";
   const video = useRef<HTMLVideoElement>(null);
-  const tilt = useRef<HTMLDivElement>(null);
-  const reduced = useRef(false);
   const fine = useFinePointer();
   const [hovered, setHovered] = useState(false);
   const hoverTimer = useRef(0);
-  useEffect(() => {
-    reduced.current = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    return () => window.clearTimeout(hoverTimer.current);
-  }, []);
+  useEffect(() => () => window.clearTimeout(hoverTimer.current), []);
 
   const play = () => {
     video.current?.play().catch(() => {});
@@ -172,28 +167,16 @@ function WorkCard({
     // A short delay so sweeping the cursor across the grid doesn't load players
     hoverTimer.current = window.setTimeout(() => setHovered(true), 350);
   };
-  // The tile leans toward the cursor. Set on the element directly, mouse only.
-  const lean = (e: React.PointerEvent) => {
-    const el = tilt.current;
-    if (!el || e.pointerType !== "mouse" || !fine || reduced.current) return;
-    const r = el.getBoundingClientRect();
-    const max = featured ? 3 : 5;
-    const x = (e.clientX - r.left) / r.width - 0.5;
-    const y = (e.clientY - r.top) / r.height - 0.5;
-    el.style.transform = `perspective(1000px) rotateX(${(-y * max).toFixed(2)}deg) rotateY(${(x * max).toFixed(2)}deg)`;
-  };
   const leave = () => {
     stop();
     window.clearTimeout(hoverTimer.current);
     setHovered(false);
-    if (tilt.current) tilt.current.style.transform = "";
   };
   const hasPreview = Boolean(item.preview || item.youtubeId);
 
   const media = (
     <>
-      {/* Hover: landscape tiles close in like a frame while the image pushes
-          forward; phone screens just push forward */}
+      {/* Hover: landscape tiles close in like a frame, inside the crop marks */}
       <div
         className={cn(
           "absolute inset-0",
@@ -201,7 +184,7 @@ function WorkCard({
             "transition-[clip-path] duration-500 ease-(--ease-out) [clip-path:inset(0)] group-hover:[clip-path:inset(0.75rem)] group-focus-within:[clip-path:inset(0.75rem)]"
         )}
       >
-        <div className="absolute inset-0 transition-transform duration-500 ease-(--ease-out) group-hover:scale-[1.06] group-focus-within:scale-[1.06]">
+        <div className="absolute inset-0">
           {item.thumbnail ? (
             <Image
               src={item.thumbnail}
@@ -228,16 +211,6 @@ function WorkCard({
           {hovered && item.youtubeId ? <HoverPreview youtubeId={item.youtubeId} /> : null}
         </div>
       </div>
-      {item.badge ? (
-        <span
-          className={cn(
-            "label absolute z-10 bg-accent px-1.5 py-0.5 text-on-accent",
-            phone ? "bottom-4 left-1/2 -translate-x-1/2 whitespace-nowrap" : "right-3 top-3"
-          )}
-        >
-          {item.badge}
-        </span>
-      ) : null}
       {!phone ? (
         <span className="label absolute bottom-3 left-3 z-10 bg-paper px-1.5 py-0.5 text-ink opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus-within:opacity-100">
           {hasPreview ? "Preview" : "Open"}
@@ -267,12 +240,11 @@ function WorkCard({
           featured && "lg:grid lg:grid-cols-12 lg:items-end lg:gap-x-6"
         )}
         onPointerEnter={enter}
-        onPointerMove={lean}
         onPointerLeave={leave}
         onFocus={play}
         onBlur={stop}
       >
-        <div ref={tilt} className={cn("tilt", featured && "lg:col-span-8")}>
+        <div className={cn(featured && "lg:col-span-8")}>
           {/* data-in comes from RevealObserver, see components/motion/reveal.tsx */}
           <div suppressHydrationWarning className="wipe">
             {phone ? (
@@ -294,8 +266,9 @@ function WorkCard({
         >
           <div className="min-w-0">
             <p className="label flex items-center gap-1.5 text-ink-2">
-              <FormatIcon weight="duotone" aria-hidden className="icon-duo size-4 text-accent-ink" />
+              <FormatIcon weight="duotone" aria-hidden className="icon-duo size-4 text-ink-2" />
               {f.label} · {f.ratio}
+              {item.badge ? <span className="text-ink">· {item.badge}</span> : null}
             </p>
             <h3
               className={cn(
@@ -355,7 +328,7 @@ export function Work() {
         heading="Work"
         label="Selected videos"
         aside="Made for Xtrusio in 2026"
-        title="Explainers and Shorts *for an AI search brand.*"
+        title="Explainers and Shorts *for an AI search brand*"
         titleId="work-title"
       />
 
@@ -468,25 +441,25 @@ export function Work() {
               </div>
               <div className="flex flex-col p-6 pt-14 md:p-8 md:pt-16">
                 <p className="label flex items-center gap-1.5 text-ink-2">
-                  {OpenIcon ? <OpenIcon weight="duotone" aria-hidden className="icon-duo size-4 text-accent-ink" /> : null}
+                  {OpenIcon ? <OpenIcon weight="duotone" aria-hidden className="icon-duo size-4 text-ink-2" /> : null}
                   {formats[open.format].label} · {formats[open.format].ratio} · {open.year}
                 </p>
                 <DialogTitle className="mt-3 text-[2rem] leading-tight">{open.title}</DialogTitle>
                 <DialogDescription className="mt-3 text-base">{open.context}</DialogDescription>
                 <dl className="label mt-8 grid grid-cols-[6rem_1fr] gap-y-3 border-t border-rule pt-4">
                   <dt className="flex items-center gap-1.5 text-ink-2">
-                    <Buildings weight="duotone" aria-hidden className="icon-duo size-4 text-accent-ink" /> Client
+                    <Buildings weight="duotone" aria-hidden className="icon-duo size-4 text-ink-2" /> Client
                   </dt>
                   <dd className="flex items-center gap-2">
                     <Image src="/logos/xtrusio.svg" alt="" width={18} height={18} className="size-[18px]" />
                     {channel.name}
                   </dd>
                   <dt className="flex items-center gap-1.5 text-ink-2">
-                    <UserFocus weight="duotone" aria-hidden className="icon-duo size-4 text-accent-ink" /> Role
+                    <UserFocus weight="duotone" aria-hidden className="icon-duo size-4 text-ink-2" /> Role
                   </dt>
                   <dd>{open.role}</dd>
                   <dt className="flex items-center gap-1.5 text-ink-2">
-                    <Wrench weight="duotone" aria-hidden className="icon-duo size-4 text-accent-ink" /> Tools
+                    <Wrench weight="duotone" aria-hidden className="icon-duo size-4 text-ink-2" /> Tools
                   </dt>
                   <dd>{open.tools}</dd>
                 </dl>
