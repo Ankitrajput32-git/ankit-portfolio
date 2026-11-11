@@ -349,7 +349,7 @@ export function Work() {
   const count = (f: Filter) => (f === "all" ? work.length : work.filter((w) => w.format === f).length);
 
   return (
-    <section id="work" aria-labelledby="work-title" className="pb-12 pt-24 md:pb-16 md:pt-28 lg:pb-20 lg:pt-32">
+    <section id="work" aria-labelledby="work-title" className="pb-10 pt-16 md:pb-16 md:pt-28 lg:pb-20 lg:pt-32">
       <SectionHeader
         section="work"
         heading="Work"
@@ -359,7 +359,7 @@ export function Work() {
         titleId="work-title"
       />
 
-      <div className="shell mt-14 lg:mt-20">
+      <div className="shell mt-10 md:mt-14 lg:mt-20">
         <div className="flex flex-wrap items-center justify-between gap-4 border-b border-rule">
           <LayoutGroup id="work-filter">
             <ToggleGroup
