@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, type RefObject } from "react";
+import { useEffect, useMemo, useRef, useState, type RefObject } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
@@ -475,6 +475,12 @@ export function RobotCanvas({
   anchor: RefObject<HTMLElement | null>;
 }) {
   const look = useRef<Look>({ x: 0, y: 0, moved: -10 });
+  // Low-power devices skip the generated studio reflections (the costliest
+  // startup step) and render at a lower pixel ratio
+  const [lowEnd] = useState(() => {
+    const nav = navigator as Navigator & { deviceMemory?: number };
+    return (nav.hardwareConcurrency ?? 8) <= 4 || (nav.deviceMemory ?? 8) <= 4;
+  });
 
   useEffect(() => {
     if (still) return;
@@ -494,7 +500,7 @@ export function RobotCanvas({
 
   return (
     <Canvas
-      dpr={2}
+      dpr={lowEnd ? 1.5 : 2}
       frameloop={still ? "demand" : "always"}
       camera={{ position: [0, 0.08, 5.8], fov: 30 }}
       gl={{ alpha: true, antialias: true }}
@@ -504,7 +510,7 @@ export function RobotCanvas({
       }}
       style={{ pointerEvents: "none" }}
     >
-      <Studio />
+      {lowEnd ? <hemisphereLight args={["#ffffff", "#c9d6e2", 1.4]} /> : <Studio />}
       <directionalLight position={[3, 4, 5]} intensity={1.8} />
       <directionalLight position={[-4, 2, 3]} intensity={0.5} />
       <directionalLight position={[-2, 3, -4]} intensity={1.6} color={ACCENT} />
