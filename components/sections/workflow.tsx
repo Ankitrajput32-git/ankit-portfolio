@@ -115,7 +115,7 @@ export function Workflow() {
         heading="Workflow"
         label="Five steps, every project"
         aside="Brief in, video out"
-        title="How a brief becomes *a video you can post.*"
+        title="How a brief becomes *a video you can post*"
         titleId="workflow-title"
       />
 
@@ -163,7 +163,7 @@ export function Workflow() {
                     )}
                   >
                     <Icon weight="duotone" aria-hidden className="icon-duo size-5" />
-                    Step {String(i + 1).padStart(2, "0")}
+                    Step {i + 1}
                   </p>
                   <h3 className="mt-2 font-display text-[clamp(2.25rem,3.4vw,3.25rem)] font-medium leading-none tracking-[-0.025em]">
                     <span className="relative">
