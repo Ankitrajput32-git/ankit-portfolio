@@ -17,7 +17,7 @@ const serviceIcons = [FilmSlate, DeviceMobileCamera, ImageSquare, SquaresFour, P
 
 export function Services() {
   return (
-    <section id="services" aria-labelledby="services-title" className="pb-12 pt-24 md:pb-16 md:pt-28 lg:pb-20 lg:pt-32">
+    <section id="services" aria-labelledby="services-title" className="pb-10 pt-16 md:pb-16 md:pt-28 lg:pb-20 lg:pt-32">
       <SectionHeader
         section="services"
         heading="Services"
@@ -27,7 +27,7 @@ export function Services() {
         titleId="services-title"
       />
 
-      <div className="shell grid-12 mt-14 gap-y-10 lg:mt-20">
+      <div className="shell grid-12 mt-10 md:mt-14 gap-y-10 lg:mt-20">
         <Reveal className="col-span-4 md:col-span-3 lg:col-span-3">
           <p className="max-w-[30ch] text-base leading-relaxed text-ink-2">
             Pick one or a few. Click a row and an email opens with the subject already written.
