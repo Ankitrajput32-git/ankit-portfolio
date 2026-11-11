@@ -189,7 +189,7 @@ export function Hero() {
         {/* Desktop: the photo takes the right half and stands on the bottom edge
             of the hero (the negative margin cancels the bottom padding), sized
             from the viewport height so it never pushes the hero past one screen. */}
-        <div className="col-span-4 row-start-2 -mt-[3vw] w-[56%] justify-self-end md:col-span-4 md:col-start-5 md:row-start-2 md:mt-0 md:w-full md:self-end lg:col-span-6 lg:col-start-7 lg:row-span-2 lg:row-start-1 lg:-mb-8 lg:w-full lg:self-stretch">
+        <div className="col-span-4 row-start-2 -mt-[3vw] w-[64%] justify-self-end md:col-span-4 md:col-start-5 md:row-start-2 md:mt-0 md:w-full md:self-end lg:col-span-6 lg:col-start-7 lg:row-span-2 lg:row-start-1 lg:-mb-8 lg:w-full lg:self-stretch">
           <PortraitStage />
         </div>
       </div>
