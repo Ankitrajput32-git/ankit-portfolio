@@ -24,7 +24,7 @@ export function Skills() {
         heading="Skills"
         label="Skills and tools"
         aside="From my resume and my current job"
-        title="What I know, *and what I use.*"
+        title="What I know *and what I use*"
         titleId="skills-title"
       />
 
@@ -40,7 +40,7 @@ export function Skills() {
                 </span>
                 {group.group}
               </span>
-              <span className="text-ink-2">({String(group.items.length).padStart(2, "0")})</span>
+              <span className="tabular-nums text-ink-2">{group.items.length}</span>
             </h3>
             <ul>
               {group.items.map(({ name, icon: ItemIcon }) => (
@@ -51,7 +51,7 @@ export function Skills() {
                     i === 0 ? "text-[clamp(1.5rem,2.6vw,2.375rem)]" : "text-[clamp(1.25rem,1.6vw,1.5rem)]"
                   )}
                 >
-                  <ItemIcon weight="duotone" aria-hidden className="icon-duo size-[0.8em] shrink-0 text-accent-ink" />
+                  <ItemIcon weight="duotone" aria-hidden className="icon-duo size-[0.8em] shrink-0 text-ink-2" />
                   {name}
                 </li>
               ))}
