@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 
+import { cn } from "@/lib/utils";
+
 const format = () =>
   new Intl.DateTimeFormat("en-GB", {
     hour: "2-digit",
@@ -20,7 +22,7 @@ export function LocalTime({ className }: { className?: string }) {
   }, []);
 
   return (
-    <span className={className}>
+    <span className={cn("whitespace-nowrap", className)}>
       Lucknow <span className="tabular-nums">{time ?? "--:--"}</span> IST
     </span>
   );
