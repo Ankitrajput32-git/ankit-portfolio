@@ -1,15 +1,7 @@
 import type { CSSProperties } from "react";
-import {
-  ArrowDown,
-  DownloadSimple,
-  EnvelopeSimple,
-  HandWaving,
-  LinkedinLogo,
-  MapPin,
-} from "@phosphor-icons/react/dist/ssr";
+import { ArrowDown, DownloadSimple, HandWaving, MapPin } from "@phosphor-icons/react/dist/ssr";
 
 import { PortraitStage } from "@/components/hero-portrait";
-import { Magnetic } from "@/components/motion/magnetic";
 import { TypedRole } from "@/components/motion/typed-role";
 import { Button } from "@/components/ui/button";
 import { site } from "@/content/site";
@@ -66,7 +58,7 @@ export function Hero() {
             Currently at <ImaproLogo className="-mt-0.5 text-[17px] text-ink" />
           </p>
           <p className="hidden items-center gap-1.5 lg:col-span-3 lg:flex">
-            <MapPin weight="duotone" aria-hidden className="icon-duo size-4 text-accent-ink" />
+            <MapPin weight="duotone" aria-hidden className="icon-duo size-4 text-ink-2" />
             {site.city}, India
           </p>
           <p className="col-span-2 flex items-center justify-end gap-2 md:col-span-3 lg:col-span-3">
@@ -79,7 +71,7 @@ export function Hero() {
       {/* On desktop the name is sized to the grid (cqw) and the viewport height
           (svh), so "Singh" always ends short of the portrait's shoulder and the
           whole hero stays on one screen. */}
-      <div className="shell grid-12 @container flex-1 grid-rows-[auto_auto_1fr] pb-6 pt-5 md:grid-rows-[auto_1fr] md:pb-10 md:pt-10 lg:pb-8 lg:pt-4">
+      <div className="shell grid-12 @container flex-1 grid-rows-[auto_minmax(11rem,1fr)_auto] pb-6 pt-5 md:grid-rows-[auto_1fr] md:pb-10 md:pt-10 lg:pb-8 lg:pt-4">
         {/* Phones and tablets: name, photo and text are separate grid rows (the
             wrapper is display: contents). Desktop: one column centred beside the
             photo, so the name, role and text read as one block with no dead gap. */}
@@ -101,7 +93,7 @@ export function Hero() {
               </span>
               <HandWaving
                 weight="duotone"
-                className="hero-wave icon-duo size-[1.05em] text-accent-ink"
+                className="hero-wave icon-duo size-[1.05em] text-ink-2"
                 style={delay(GREETING_AT + 7 * STEP + 120)}
               />
             </span>
@@ -139,37 +131,20 @@ export function Hero() {
             that&apos;s explainers and Shorts for Xtrusio&apos;s YouTube channel.
           </p>
           <div className="intro-fade mt-4 flex flex-wrap gap-3 lg:mt-[min(2rem,3svh)]" style={delay(1050)}>
-            <Magnetic>
-              <Button asChild>
-                <a href="#work">
-                  See my work
-                  <ArrowDown weight="bold" aria-hidden />
-                </a>
-              </Button>
-            </Magnetic>
-            <Magnetic>
-              <Button asChild variant="outline">
-                <a href={site.resume} download="Ankit-Singh-Resume.pdf">
-                  <DownloadSimple weight="bold" aria-hidden />
-                  <span className="hidden sm:inline">Download resume</span>
-                  <span className="sm:hidden">Resume</span>
-                </a>
-              </Button>
-            </Magnetic>
-            <Magnetic>
-              <Button asChild variant="outline" size="icon" className="size-12">
-                <a href={site.linkedin} target="_blank" rel="noreferrer" aria-label="LinkedIn profile">
-                  <LinkedinLogo weight="bold" aria-hidden className="size-5" />
-                </a>
-              </Button>
-            </Magnetic>
-            <Magnetic>
-              <Button asChild variant="outline" size="icon" className="size-12">
-                <a href={`mailto:${site.email}`} aria-label="Email me">
-                  <EnvelopeSimple weight="bold" aria-hidden className="size-5" />
-                </a>
-              </Button>
-            </Magnetic>
+            {/* One primary and one secondary action; email and LinkedIn live in Contact */}
+            <Button asChild>
+              <a href="#work">
+                See my work
+                <ArrowDown weight="bold" aria-hidden />
+              </a>
+            </Button>
+            <Button asChild variant="outline">
+              <a href={site.resume} download="Ankit-Singh-Resume.pdf">
+                <DownloadSimple weight="bold" aria-hidden />
+                <span className="hidden sm:inline">Download resume</span>
+                <span className="sm:hidden">Resume</span>
+              </a>
+            </Button>
           </div>
           <p
             className="intro-fade label mt-4 flex flex-wrap items-center gap-x-3 gap-y-2 text-ink-2 lg:hidden"
@@ -186,10 +161,12 @@ export function Hero() {
         </div>
         </div>
 
-        {/* Desktop: the photo takes the right half and stands on the bottom edge
+        {/* Phones: the photo fills whatever height is left between the name and
+            the text, so the first screen has no empty band on any phone height.
+            Desktop: the photo takes the right half and stands on the bottom edge
             of the hero (the negative margin cancels the bottom padding), sized
             from the viewport height so it never pushes the hero past one screen. */}
-        <div className="col-span-4 row-start-2 -mt-[3vw] w-[64%] justify-self-end md:col-span-4 md:col-start-5 md:row-start-2 md:mt-0 md:w-full md:self-end lg:col-span-6 lg:col-start-7 lg:row-span-2 lg:row-start-1 lg:-mb-8 lg:w-full lg:self-stretch">
+        <div className="col-span-4 row-start-2 -mt-[3vw] min-h-0 w-full self-stretch md:col-span-4 md:col-start-5 md:row-start-2 md:mt-0 md:w-full md:self-end lg:col-span-6 lg:col-start-7 lg:row-span-2 lg:row-start-1 lg:-mb-8 lg:w-full lg:self-stretch">
           <PortraitStage />
         </div>
       </div>
