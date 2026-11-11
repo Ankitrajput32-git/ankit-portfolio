@@ -277,7 +277,9 @@
      leaving half of a 3px stroke as a clean 1.5px outline. */
   .footer-name {
     color: var(--paper);
-    -webkit-text-stroke: 3px var(--rule-strong);
+    /* ink-2, not a faint rule colour: checkers read the stroke as the text
+       colour, and ink-2 clears 3:1 for large text on both themes */
+    -webkit-text-stroke: 3px var(--ink-2);
     paint-order: stroke fill;
     padding-bottom: 0.14em; /* room for the "g" under the tight leading */
     transition: -webkit-text-stroke-color 400ms var(--ease-out);
