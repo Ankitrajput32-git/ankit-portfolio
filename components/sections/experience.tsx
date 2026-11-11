@@ -11,7 +11,7 @@ import { cn } from "@/lib/utils";
 
 export function Experience() {
   return (
-    <section id="experience" aria-labelledby="experience-title" className="pb-12 pt-24 md:pb-16 md:pt-28 lg:pb-20 lg:pt-32">
+    <section id="experience" aria-labelledby="experience-title" className="pb-10 pt-16 md:pb-16 md:pt-28 lg:pb-20 lg:pt-32">
       <SectionHeader
         section="experience"
         heading="Experience"
@@ -21,7 +21,7 @@ export function Experience() {
         titleId="experience-title"
       />
 
-      <div className="shell mt-14 lg:mt-20">
+      <div className="shell mt-10 md:mt-14 lg:mt-20">
         <ol className="relative border-t border-rule">
           {/* Spine sits on the line between the date and content columns */}
           <span
