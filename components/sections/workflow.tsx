@@ -108,7 +108,7 @@ export function Workflow() {
       ref={root}
       id="workflow"
       aria-labelledby="workflow-title"
-      className="bg-paper-2 pb-12 pt-24 md:pb-16 md:pt-28 lg:pb-20 lg:pt-32"
+      className="bg-paper-2 pb-10 pt-16 md:pb-16 md:pt-28 lg:pb-20 lg:pt-32"
     >
       <SectionHeader
         section="workflow"
