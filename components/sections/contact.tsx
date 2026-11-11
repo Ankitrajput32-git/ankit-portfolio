@@ -56,7 +56,7 @@ export function Contact() {
           <MaskWords text="Send me *the brief.*" emphasis="text-paper-fixed" />
         </h2>
 
-        <div className="grid-12 mt-14 gap-y-10 md:mt-20">
+        <div className="grid-12 mt-10 gap-y-10 md:mt-20">
           <div className="col-span-4 md:col-span-8 lg:col-span-7">
             <p className="label flex items-center gap-2">
               <EnvelopeSimple weight="duotone" aria-hidden className="icon-duo [--icon-fill:rgb(243_239_230/0.55)] size-5" />
