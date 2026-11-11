@@ -7,7 +7,7 @@ export default function NotFound() {
     <section className="shell flex min-h-[100svh] flex-col justify-center pb-16 pt-28">
       <p className="label text-ink-2">Error 404</p>
       <h1 className="display mt-4 text-[clamp(4rem,16vw,13rem)] leading-[0.85]">
-        Page not <span className="text-accent">found.</span>
+        Page not <span className="text-accent">found</span>
       </h1>
       <p className="mt-6 max-w-[40ch] text-lg leading-relaxed text-ink-2">
         This link doesn&apos;t go anywhere. The portfolio is all on one page.
