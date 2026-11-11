@@ -8,7 +8,6 @@ import {
 } from "@phosphor-icons/react/dist/ssr";
 
 import { CopyEmail } from "@/components/copy-email";
-import { Magnetic } from "@/components/motion/magnetic";
 import { MaskWords } from "@/components/motion/reveal";
 import { Button } from "@/components/ui/button";
 import { site } from "@/content/site";
@@ -53,7 +52,7 @@ export function Contact() {
           id="contact-title"
           className="display mt-12 text-[clamp(3.5rem,12.5vw,13rem)] leading-[0.88] md:mt-16"
         >
-          <MaskWords text="Send me *the brief.*" emphasis="text-paper-fixed" />
+          <MaskWords text="Send me *the brief*" emphasis="text-paper-fixed" />
         </h2>
 
         <div className="grid-12 mt-10 gap-y-10 md:mt-20">
@@ -64,7 +63,7 @@ export function Contact() {
             </p>
             <a
               href={`mailto:${site.email}`}
-              className="link-underline mt-1 inline-block break-all py-2 font-display text-[clamp(1.375rem,4.1vw,3.75rem)] font-medium leading-tight tracking-[-0.015em]"
+              className="link-underline mt-1 inline-block break-all py-2 font-display text-[clamp(1.375rem,3.4vw,3.25rem)] font-medium leading-tight tracking-[-0.015em]"
             >
               {site.email}
             </a>
@@ -99,15 +98,13 @@ export function Contact() {
               </li>
             </ul>
             <div className="mt-8">
-              <Magnetic>
-                <Button asChild variant="inverse">
-                  <a href={site.resume} download="Ankit-Singh-Resume.pdf">
-                    <DownloadSimple weight="bold" aria-hidden />
-                    Download resume
-                    <span className="opacity-70">PDF</span>
-                  </a>
-                </Button>
-              </Magnetic>
+              <Button asChild variant="inverse">
+                <a href={site.resume} download="Ankit-Singh-Resume.pdf">
+                  <DownloadSimple weight="bold" aria-hidden />
+                  Download resume
+                  <span className="opacity-70">PDF</span>
+                </a>
+              </Button>
             </div>
           </div>
         </div>
