@@ -5,8 +5,7 @@ import { cn } from "@/lib/utils";
 /**
  * Every section opens the same way: a hairline, a mono running head, then
  * the section's name set huge and thin, with the title under it. The name
- * drifts against the scroll (CSS scroll-driven animation where supported).
- * It matches the nav label, so the page reads like chapters.
+ * matches the nav label, so the page reads like chapters.
  */
 export function SectionHeader({
   section,
@@ -31,7 +30,7 @@ export function SectionHeader({
       <div className="rule" />
       <div className="grid-12 label items-center pt-3 text-ink-2">
         <span className="col-span-4 flex items-center gap-2 md:col-span-4 lg:col-span-5">
-          <Icon weight="duotone" aria-hidden className="icon-duo size-[18px] shrink-0 text-accent-ink" />
+          <Icon weight="duotone" aria-hidden className="icon-duo size-[18px] shrink-0 text-ink-2" />
           {label}
         </span>
         {aside ? (
@@ -42,7 +41,7 @@ export function SectionHeader({
       </div>
 
       <div aria-hidden className="mt-6 overflow-x-clip md:mt-8 lg:mt-10">
-        <span className="numeral-drift block select-none font-display text-[clamp(3rem,18vw,15rem)] font-extralight leading-[0.9] tracking-[-0.055em] text-accent">
+        <span className="block select-none font-display text-[clamp(3rem,18vw,15rem)] font-extralight leading-[0.9] tracking-[-0.055em] text-ink">
           {heading}
         </span>
       </div>
