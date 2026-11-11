@@ -211,12 +211,12 @@
     }
   }
 
+  /* Mono running heads and meta, in sentence case like the rest of the copy */
   .label {
     font-family: var(--font-mono);
     font-size: 0.75rem;
     line-height: 1.4;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
+    letter-spacing: 0.01em;
   }
 
   .display {
@@ -490,19 +490,20 @@
 
 /* ------------------------------------------------------------------
    Two-tone icons. Phosphor's duotone layer is a 20% copy of the stroke;
-   here it becomes a stronger tint so icons read as coloured, not grey.
+   here it is a soft tint of the icon's own text colour, so icons stay in
+   the neutral text roles and the accent is kept for what matters.
    ------------------------------------------------------------------ */
 @layer components {
   .icon-duo path[opacity="0.2"] {
     opacity: 1;
-    fill: var(--icon-fill, color-mix(in oklab, var(--accent) 32%, transparent));
+    fill: var(--icon-fill, color-mix(in oklab, currentColor 16%, transparent));
   }
   .icon-tile {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    background: color-mix(in oklab, var(--accent) 12%, transparent);
-    color: var(--accent-ink);
+    background: color-mix(in oklab, var(--ink) 6%, transparent);
+    color: var(--ink-2);
   }
 }
 
@@ -562,15 +563,11 @@
 }
 
 /* ------------------------------------------------------------------
-   Work tiles: wipe up into view (RevealObserver adds [data-in]) and lean
-   toward the cursor (work.tsx sets the transform; this eases it back).
-   The open state reaches 4px past the edges so the phone outline's ring
-   isn't clipped.
+   Work tiles wipe up into view (RevealObserver adds [data-in]). The open
+   state reaches 4px past the edges so the phone outline's ring isn't
+   clipped.
    ------------------------------------------------------------------ */
 @layer components {
-  .tilt {
-    transition: transform 350ms var(--ease-out);
-  }
   .js .wipe {
     clip-path: inset(100% 0 0 0);
     transition: clip-path 900ms var(--ease-out);
@@ -728,25 +725,6 @@
   }
   to {
     transform: translate3d(86%, 0, 0);
-  }
-}
-
-/* Section numerals drift against the scroll where the browser supports it */
-@keyframes drift {
-  from {
-    transform: translate3d(0, 14%, 0);
-  }
-  to {
-    transform: translate3d(0, -14%, 0);
-  }
-}
-@supports (animation-timeline: view()) {
-  @media (prefers-reduced-motion: no-preference) {
-    .numeral-drift {
-      animation: drift linear both;
-      animation-timeline: view();
-      animation-range: cover;
-    }
   }
 }
 
