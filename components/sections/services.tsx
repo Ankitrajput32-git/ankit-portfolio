@@ -23,7 +23,7 @@ export function Services() {
         heading="Services"
         label="For brands and agencies"
         aside="Video, images and writing"
-        title="What I can make *for your brand.*"
+        title="What I can make *for your brand*"
         titleId="services-title"
       />
 
@@ -44,15 +44,11 @@ export function Services() {
                 className="group relative grid grid-cols-4 gap-x-4 gap-y-3 py-7 md:grid-cols-9 md:gap-x-5 md:py-9 lg:gap-x-6"
               >
                 <span className="pt-1 md:col-span-1">
-                  <span className="icon-tile size-12 transition-colors duration-300 group-hover:bg-accent group-hover:text-on-accent">
-                    <Icon
-                      weight="duotone"
-                      aria-hidden
-                      className="icon-duo size-7 transition-transform duration-300 ease-(--ease-out) group-hover:-rotate-6 group-hover:scale-110"
-                    />
+                  <span className="icon-tile size-12 transition-colors duration-200 group-hover:text-ink">
+                    <Icon weight="duotone" aria-hidden className="icon-duo size-7" />
                   </span>
                 </span>
-                <h3 className="col-span-3 font-display text-[clamp(1.875rem,4vw,3.5rem)] font-medium leading-[0.98] tracking-[-0.025em] transition-[font-weight,translate] duration-300 ease-(--ease-out) group-hover:translate-x-2 group-hover:font-normal md:col-span-4">
+                <h3 className="col-span-3 font-display text-[clamp(1.875rem,4vw,3.5rem)] font-medium leading-[0.98] tracking-[-0.025em] md:col-span-4">
                   {s.title}
                 </h3>
                 <div className="col-span-3 col-start-2 md:col-span-3 md:col-start-auto md:pt-2">
@@ -66,7 +62,7 @@ export function Services() {
                 <ArrowUpRight
                   weight="bold"
                   aria-hidden
-                  className="absolute right-0 top-7 size-5 -translate-x-2 translate-y-2 text-accent-ink opacity-0 transition-[opacity,translate] duration-300 ease-(--ease-out) group-hover:translate-x-0 group-hover:translate-y-0 group-hover:opacity-100 md:top-9"
+                  className="absolute right-0 top-7 size-5 -translate-x-1 translate-y-1 text-accent-ink opacity-0 transition-[opacity,translate] duration-200 ease-(--ease-out) group-hover:translate-x-0 group-hover:translate-y-0 group-hover:opacity-100 md:top-9"
                 />
                 <span
                   aria-hidden
