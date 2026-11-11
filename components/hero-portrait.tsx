@@ -80,6 +80,7 @@ export function PortraitStage() {
           alt="Ankit Singh smiling slightly, in a navy suit and white shirt, looking to the side"
           fill
           preload
+          fetchPriority="high"
           sizes="(min-width: 1024px) 50vw, (min-width: 768px) 45vw, 62vw"
           className="object-contain object-bottom lg:object-cover lg:object-top"
         />
