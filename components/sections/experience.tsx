@@ -17,7 +17,7 @@ export function Experience() {
         heading="Experience"
         label="Three jobs so far"
         aside="Newest first"
-        title="Where I've *worked.*"
+        title="Where I've *worked*"
         titleId="experience-title"
       />
 
@@ -34,12 +34,12 @@ export function Experience() {
             <li key={job.company} className="grid-12 relative gap-y-4 border-b border-rule py-10 md:py-14">
               <div className="col-span-4 pl-6 md:col-span-2 md:pl-0 lg:col-span-3">
                 <p className="label flex items-center gap-1.5 text-ink-2">
-                  <CalendarBlank weight="duotone" aria-hidden className="icon-duo size-4 text-accent-ink" />
+                  <CalendarBlank weight="duotone" aria-hidden className="icon-duo size-4 text-ink-2" />
                   {job.start} – {job.end}
                 </p>
                 {job.current ? (
                   <p className="label mt-3 inline-flex items-center gap-2 text-accent-ink">
-                    <span aria-hidden className="size-1.5 animate-pulse bg-accent" />
+                    <span aria-hidden className="size-1.5 bg-accent" />
                     Current role
                   </p>
                 ) : null}
