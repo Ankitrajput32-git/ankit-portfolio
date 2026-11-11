@@ -145,31 +145,42 @@ export function Assistant() {
   const { messages, sendMessage, setMessages, status, error, clearError, stop } = useChat();
   const busy = status === "submitted" || status === "streaming";
 
-  // Load the robot when the browser is idle
+  // three.js is the heaviest thing on the page (~900 KB), so the robot loads
+  // on the visitor's first scroll, tap, key or mouse move, not during the
+  // initial load; 15 s without any input loads it anyway.
   useEffect(() => {
-    const go = () => setReady(hasWebGL() ? "3d" : "flat");
-    if ("requestIdleCallback" in window) {
-      const id = window.requestIdleCallback(go, { timeout: 2500 });
-      return () => window.cancelIdleCallback(id);
-    }
-    const id = setTimeout(go, 1200);
-    return () => clearTimeout(id);
+    let done = false;
+    const events = ["pointermove", "pointerdown", "wheel", "touchstart", "keydown", "scroll"] as const;
+    const go = () => {
+      if (done) return;
+      done = true;
+      cleanup();
+      setReady(hasWebGL() ? "3d" : "flat");
+    };
+    const fallback = window.setTimeout(go, 15000);
+    const cleanup = () => {
+      window.clearTimeout(fallback);
+      events.forEach((e) => window.removeEventListener(e, go));
+    };
+    events.forEach((e) => window.addEventListener(e, go, { passive: true, once: true }));
+    return cleanup;
   }, []);
 
-  // Say hello once per visit, a few seconds in
+  // Say hello once per visit, a few seconds after the robot arrives
   useEffect(() => {
+    if (ready === "wait") return;
     let seen = false;
     try {
       seen = sessionStorage.getItem(GREETED_KEY) === "1";
     } catch {}
     if (seen) return;
-    const show = window.setTimeout(() => setGreeting(true), 3500);
-    const hide = window.setTimeout(() => setGreeting(false), 11500);
+    const show = window.setTimeout(() => setGreeting(true), 2500);
+    const hide = window.setTimeout(() => setGreeting(false), 10500);
     return () => {
       window.clearTimeout(show);
       window.clearTimeout(hide);
     };
-  }, []);
+  }, [ready]);
 
   const dismissGreeting = () => {
     setGreeting(false);
