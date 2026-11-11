@@ -12,13 +12,13 @@ const groupIcons = [Sparkle, Code, UsersThree, Translate];
 const columns = [
   "col-span-4 md:col-span-4 lg:col-span-5",
   "col-span-4 md:col-span-4 lg:col-span-3",
-  "col-span-2 md:col-span-4 lg:col-span-2",
-  "col-span-2 md:col-span-4 lg:col-span-2",
+  "col-span-4 md:col-span-4 lg:col-span-2",
+  "col-span-4 md:col-span-4 lg:col-span-2",
 ];
 
 export function Skills() {
   return (
-    <section id="skills" aria-labelledby="skills-title" className="bg-paper-2 pb-12 pt-24 md:pb-16 md:pt-28 lg:pb-20 lg:pt-32">
+    <section id="skills" aria-labelledby="skills-title" className="bg-paper-2 pb-10 pt-16 md:pb-16 md:pt-28 lg:pb-20 lg:pt-32">
       <SectionHeader
         section="skills"
         heading="Skills"
@@ -28,7 +28,7 @@ export function Skills() {
         titleId="skills-title"
       />
 
-      <div className="shell grid-12 mt-14 gap-y-14 lg:mt-20">
+      <div className="shell grid-12 mt-10 md:mt-14 gap-y-14 lg:mt-20">
         {skills.map((group, i) => {
           const Icon = groupIcons[i];
           return (
