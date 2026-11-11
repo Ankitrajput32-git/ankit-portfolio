@@ -12,7 +12,7 @@ export function About() {
         heading="About"
         label="Education and achievements"
         aside="Lucknow, India"
-        title="A computer science grad *who makes videos.*"
+        title="A computer science grad *who makes videos*"
         titleId="about-title"
       />
 
@@ -70,7 +70,7 @@ export function About() {
 
           <div className="mt-8 border-l-2 border-accent pl-5">
             <p className="label flex items-center gap-2 text-ink-2">
-              <Database weight="duotone" aria-hidden className="icon-duo size-4 text-accent-ink" />
+              <Database weight="duotone" aria-hidden className="icon-duo size-4 text-ink-2" />
               College project
             </p>
             <p className="mt-2 font-display text-[1.5rem] font-medium leading-tight tracking-[-0.01em]">
