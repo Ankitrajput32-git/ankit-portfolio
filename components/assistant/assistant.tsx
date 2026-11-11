@@ -45,7 +45,7 @@ function fallbackLine(error: Error) {
   if (code === "not-configured")
     return `I'm not connected to my brain yet, so I can't chat right now. You can reach Ankit at ${site.email}.`;
   if (code === "rate-limited")
-    return `That's a lot of questions! Give me a few minutes, or email Ankit at ${site.email}.`;
+    return `That's a lot of questions. Give me a few minutes, or email Ankit at ${site.email}.`;
   return `Something went wrong on my side. Try again, or email Ankit at ${site.email}.`;
 }
 
@@ -254,11 +254,7 @@ export function Assistant() {
             className="fixed inset-x-2 bottom-[6rem] z-[70] flex max-h-[min(38rem,calc(100svh-7.5rem))] flex-col overflow-hidden border border-rule-strong bg-paper shadow-[0_40px_90px_-30px_rgb(0_0_0/0.65),0_12px_24px_-12px_rgb(0_0_0/0.25)] md:inset-x-auto md:bottom-[10.75rem] md:right-5 md:w-[25.5rem]"
           >
             {/* Signature line */}
-            <span
-              aria-hidden
-              className="absolute inset-x-0 top-0 h-[2px]"
-              style={{ background: `linear-gradient(90deg, var(--accent), ${GLOW} 50%, var(--accent))` }}
-            />
+            <span aria-hidden className="absolute inset-x-0 top-0 h-[2px] bg-accent" />
 
             <header className="flex items-center gap-3 px-4 pb-3 pt-4">
               <span className="relative">
@@ -303,7 +299,7 @@ export function Assistant() {
                 <>
                   <div>
                     <p className="font-display text-[1.875rem] font-medium leading-[1.02] tracking-[-0.025em]">
-                      Hi, I&apos;m {NAME}.
+                      Hi, I&apos;m {NAME}
                     </p>
                     <p className="mt-2 text-[0.9375rem] leading-relaxed text-ink-2">
                       Ask me anything about Ankit&apos;s videos, tools, experience or how to work with him.
@@ -427,7 +423,7 @@ export function Assistant() {
               className="absolute bottom-full right-1 mb-1 hidden w-max max-w-[min(15rem,calc(100vw-2rem))] origin-bottom-right items-center gap-1 border border-rule-strong bg-paper py-1 pl-3 pr-1 shadow-[0_12px_30px_-14px_rgb(0_0_0/0.45)] md:bottom-[58%] md:right-[88%] md:mb-0 md:flex md:origin-right"
             >
               <button type="button" onClick={() => toggle(true)} className="py-1.5 text-left text-sm">
-                Hi! I&apos;m {NAME}. Ask me about Ankit.
+                Hi, I&apos;m {NAME}. Ask me about Ankit.
               </button>
               <button
                 type="button"
