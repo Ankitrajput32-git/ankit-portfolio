@@ -4,7 +4,6 @@ import { Geist, Geist_Mono } from "next/font/google";
 
 import { BrandDefs } from "@/components/brand";
 import { CustomCursor } from "@/components/chrome/custom-cursor";
-import { GridOverlay } from "@/components/chrome/grid-overlay";
 import { SiteFooter } from "@/components/chrome/site-footer";
 import { SiteHeader } from "@/components/chrome/site-header";
 import { Assistant } from "@/components/assistant/assistant";
@@ -136,7 +135,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 </main>
                 <SiteFooter />
                 <Assistant />
-                <GridOverlay />
                 <CustomCursor />
                 <RevealObserver />
               </SmoothScroll>
