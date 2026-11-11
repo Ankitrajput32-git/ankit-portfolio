@@ -6,7 +6,7 @@ import { achievements, education, project } from "@/content/about";
 
 export function About() {
   return (
-    <section id="about" aria-labelledby="about-title" className="pb-12 pt-24 md:pb-16 md:pt-28 lg:pb-20 lg:pt-32">
+    <section id="about" aria-labelledby="about-title" className="pb-10 pt-16 md:pb-16 md:pt-28 lg:pb-20 lg:pt-32">
       <SectionHeader
         section="about"
         heading="About"
@@ -16,7 +16,7 @@ export function About() {
         titleId="about-title"
       />
 
-      <div className="shell grid-12 mt-14 gap-y-12 lg:mt-20">
+      <div className="shell grid-12 mt-10 md:mt-14 gap-y-12 lg:mt-20">
         <div className="col-span-4 md:col-span-8 lg:col-span-7">
           <Reveal>
             <p className="lede">
