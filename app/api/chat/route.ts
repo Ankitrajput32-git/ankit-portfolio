@@ -16,8 +16,9 @@ const MODEL = process.env.GROQ_MODEL ?? "openai/gpt-oss-120b";
 
 /*
  * Per-visitor speed bump: 12 messages per 10 minutes, counted in memory.
- * On a serverless host each instance keeps its own count, so this protects
- * the free quota from one noisy visitor, not from a determined one.
+ * Vercel spreads requests over several instances, each with its own count,
+ * so in production this only slows a burst that lands on one instance. The
+ * real per-visitor limit is a Vercel Firewall rate-limit rule on /api/chat.
  */
 const WINDOW_MS = 10 * 60 * 1000;
 const LIMIT = 12;
@@ -34,11 +35,28 @@ function overLimit(ip: string) {
   return entry.count > LIMIT;
 }
 
+/*
+ * Only the site itself may call this. Browsers always send Origin on a POST,
+ * so requests from other sites, or scripts that don't fake the header, are
+ * turned away before they can spend the free Groq quota.
+ */
+function fromThisSite(req: Request) {
+  const origin = req.headers.get("origin");
+  const host = req.headers.get("x-forwarded-host") ?? req.headers.get("host");
+  if (!origin || !host) return false;
+  try {
+    return new URL(origin).host === host;
+  } catch {
+    return false;
+  }
+}
+
 /* The chat panel turns these codes into Pixel's friendly fallback lines */
 const fail = (code: string, status: number) => Response.json({ code }, { status });
 
 export async function POST(req: Request) {
   if (!process.env.GROQ_API_KEY) return fail("not-configured", 503);
+  if (!fromThisSite(req)) return fail("forbidden", 403);
 
   const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "local";
   if (overLimit(ip)) return fail("rate-limited", 429);
