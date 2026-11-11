@@ -1,11 +1,23 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { Fragment, useEffect, useRef, useState, type ReactNode } from "react";
 import dynamic from "next/dynamic";
 import { useChat } from "@ai-sdk/react";
 import { isTextUIPart } from "ai";
 import { AnimatePresence, m, useReducedMotion } from "motion/react";
-import { ArrowUp, Robot, X } from "@phosphor-icons/react";
+import {
+  ArrowCounterClockwise,
+  ArrowUp,
+  ArrowUpRight,
+  Briefcase,
+  DownloadSimple,
+  EnvelopeSimple,
+  FilmSlate,
+  Robot,
+  Toolbox,
+  X,
+  type Icon,
+} from "@phosphor-icons/react";
 
 import { site } from "@/content/site";
 import { cn } from "@/lib/utils";
@@ -14,11 +26,12 @@ import { cn } from "@/lib/utils";
 const RobotCanvas = dynamic(() => import("./robot").then((mod) => mod.RobotCanvas), { ssr: false });
 
 const NAME = "Pixel";
-const suggestions = [
-  "What does Ankit make?",
-  "Which AI tools does Ankit use?",
-  "Is Ankit open to work?",
-  "How do I contact Ankit?",
+const GLOW = "#5cc8ff";
+const suggestions: { text: string; icon: Icon }[] = [
+  { text: "What does Ankit make?", icon: FilmSlate },
+  { text: "Which AI tools does Ankit use?", icon: Toolbox },
+  { text: "Is Ankit open to work?", icon: Briefcase },
+  { text: "How do I contact Ankit?", icon: EnvelopeSimple },
 ];
 const ease = [0.2, 0.7, 0, 1] as const;
 const GREETED_KEY = "pixel-greeted";
@@ -44,10 +57,76 @@ function hasWebGL() {
   }
 }
 
+/* Emails and links in a reply become tappable */
+const LINK = /([\w.+-]+@[\w-]+\.[\w.]+|https?:\/\/[^\s)]+)/g;
+function Linkified({ text }: { text: string }) {
+  return (
+    <>
+      {text.split(LINK).map((part, i) => {
+        if (i % 2 === 0) return <Fragment key={i}>{part}</Fragment>;
+        const href = part.includes("@") && !part.startsWith("http") ? `mailto:${part}` : part;
+        return (
+          <a
+            key={i}
+            href={href}
+            {...(href.startsWith("http") ? { target: "_blank", rel: "noreferrer" } : {})}
+            className="break-all underline decoration-accent/60 underline-offset-2 hover:decoration-accent"
+          >
+            {part}
+          </a>
+        );
+      })}
+    </>
+  );
+}
+
+/** Pixel's little avatar beside its messages */
+function Avatar({ size = "sm" }: { size?: "sm" | "md" }) {
+  return (
+    <span
+      aria-hidden
+      className={cn(
+        "relative grid shrink-0 place-items-center bg-[#0b1016]",
+        size === "md" ? "size-10" : "size-7"
+      )}
+      style={{ color: GLOW }}
+    >
+      <Robot weight="fill" className={size === "md" ? "size-5" : "size-3.5"} />
+    </span>
+  );
+}
+
+function BotMessage({ children, first = false }: { children: ReactNode; first?: boolean }) {
+  return (
+    <div className="flex items-end gap-2.5">
+      <span className={cn(!first && "invisible")}>
+        <Avatar />
+      </span>
+      <div className="min-w-0 max-w-[85%]">
+        {first ? <p className="label mb-1 text-ink-2">{NAME}</p> : null}
+        <div className="whitespace-pre-wrap border border-rule bg-paper-2 px-3.5 py-2.5 text-base leading-relaxed md:text-[0.9375rem] text-ink">
+          {children}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function UserMessage({ children }: { children: ReactNode }) {
+  return (
+    <div className="flex justify-end">
+      <p className="max-w-[85%] whitespace-pre-wrap bg-accent px-3.5 py-2.5 text-base leading-relaxed md:text-[0.9375rem] text-on-accent">
+        {children}
+      </p>
+    </div>
+  );
+}
+
 /**
- * Pixel: a 3D robot in the corner that opens a small chat about Ankit.
- * Replies stream from /api/chat (Groq). The robot waves on hover and while
- * it says hello, and its mouth moves while a reply is streaming.
+ * Pixel: a 3D robot in the corner that opens a chat about Ankit. Replies
+ * stream from /api/chat (Groq). The robot waves on hover and while it says
+ * hello, hops and spins when clicked, and its mouth moves while a reply
+ * streams. On phones the chat is a full-width sheet above a smaller robot.
  */
 export function Assistant() {
   const reduce = useReducedMotion() ?? false;
@@ -63,7 +142,7 @@ export function Assistant() {
   const field = useRef<HTMLInputElement>(null);
   const log = useRef<HTMLDivElement>(null);
 
-  const { messages, sendMessage, status, error, clearError } = useChat();
+  const { messages, sendMessage, setMessages, status, error, clearError, stop } = useChat();
   const busy = status === "submitted" || status === "streaming";
 
   // Load the robot when the browser is idle
@@ -135,6 +214,17 @@ export function Assistant() {
     setInput("");
   };
 
+  const startOver = () => {
+    if (busy) stop();
+    if (error) clearError();
+    setMessages([]);
+    field.current?.focus();
+  };
+
+  const visible = messages
+    .map((msg) => ({ id: msg.id, role: msg.role, text: msg.parts.filter(isTextUIPart).map((p) => p.text).join("") }))
+    .filter((msg) => msg.text);
+
   return (
     <>
       <AnimatePresence>
@@ -145,28 +235,42 @@ export function Assistant() {
             role="dialog"
             aria-labelledby="pixel-title"
             data-lenis-prevent
-            initial={{ opacity: 0, transform: "translateY(10px) scale(0.96)" }}
+            initial={{ opacity: 0, transform: "translateY(12px) scale(0.97)" }}
             animate={{ opacity: 1, transform: "translateY(0px) scale(1)" }}
-            exit={{ opacity: 0, transform: "translateY(6px) scale(0.98)", transition: { duration: 0.14, ease } }}
-            transition={{ duration: 0.22, ease }}
+            exit={{ opacity: 0, transform: "translateY(8px) scale(0.98)", transition: { duration: 0.14, ease } }}
+            transition={{ duration: 0.24, ease }}
             style={{ transformOrigin: "bottom right" }}
-            className="fixed bottom-[7.75rem] right-3 z-[70] flex max-h-[min(34rem,calc(100svh-9.5rem))] w-[min(24rem,calc(100vw-1.5rem))] flex-col border border-rule-strong bg-paper shadow-[0_28px_70px_-24px_rgb(0_0_0/0.5)] md:bottom-[10.75rem] md:right-5"
+            className="fixed inset-x-2 bottom-[6rem] z-[70] flex max-h-[min(38rem,calc(100svh-7.5rem))] flex-col overflow-hidden border border-rule-strong bg-paper shadow-[0_40px_90px_-30px_rgb(0_0_0/0.65),0_12px_24px_-12px_rgb(0_0_0/0.25)] md:inset-x-auto md:bottom-[10.75rem] md:right-5 md:w-[25.5rem]"
           >
-            <header className="flex items-center justify-between gap-3 border-b border-rule px-4 py-2">
-              <div className="flex items-center gap-3">
-                <span className="icon-tile size-9">
-                  <Robot weight="duotone" aria-hidden className="icon-duo size-5" />
-                </span>
-                <div>
-                  <p id="pixel-title" className="font-display text-[1.125rem] font-semibold leading-tight">
-                    {NAME}
-                  </p>
-                  <p className="label flex items-center gap-1.5 text-ink-2">
-                    <span aria-hidden className="size-1.5 bg-accent" />
-                    Ankit&apos;s robot
-                  </p>
-                </div>
+            {/* Signature line */}
+            <span
+              aria-hidden
+              className="absolute inset-x-0 top-0 h-[2px]"
+              style={{ background: `linear-gradient(90deg, var(--accent), ${GLOW} 50%, var(--accent))` }}
+            />
+
+            <header className="flex items-center gap-3 px-4 pb-3 pt-4">
+              <span className="relative">
+                <Avatar size="md" />
+                <span aria-hidden className="absolute -bottom-0.5 -right-0.5 size-2.5 rounded-full bg-[#34d399] ring-2 ring-paper" />
+              </span>
+              <div className="min-w-0 flex-1">
+                <p id="pixel-title" className="font-display text-[1.1875rem] font-semibold leading-none tracking-[-0.01em]">
+                  {NAME}
+                </p>
+                <p className="mt-1.5 text-xs text-ink-2">Ankit&apos;s AI assistant · replies in seconds</p>
               </div>
+              {visible.length || error ? (
+                <button
+                  type="button"
+                  onClick={startOver}
+                  aria-label="Start over"
+                  title="Start over"
+                  className="inline-flex size-11 items-center justify-center text-ink-2 transition-colors hover:text-ink"
+                >
+                  <ArrowCounterClockwise weight="bold" className="size-4" />
+                </button>
+              ) : null}
               <button
                 type="button"
                 onClick={() => toggle(false)}
@@ -176,55 +280,90 @@ export function Assistant() {
                 <X weight="bold" className="size-4" />
               </button>
             </header>
+            <div className="h-px bg-rule" />
 
             <div
               ref={log}
               role="log"
               aria-live="polite"
-              className="flex-1 space-y-3 overflow-y-auto overscroll-contain px-4 py-4"
+              className="flex-1 space-y-4 overflow-y-auto overscroll-contain px-4 py-5"
             >
-              <Bubble from="bot">
-                Hi! I&apos;m {NAME}. Ask me anything about Ankit&apos;s videos, tools, experience or how
-                to work with him.
-              </Bubble>
-
-              {messages.length === 0 ? (
-                <div className="flex flex-wrap gap-2 pt-1">
-                  {suggestions.map((s) => (
-                    <button
-                      key={s}
-                      type="button"
-                      onClick={() => ask(s)}
-                      className="min-h-11 border border-rule-strong px-3 py-2 text-left text-sm transition-colors hover:border-accent hover:text-accent-ink"
+              {visible.length === 0 && !error ? (
+                <>
+                  <div>
+                    <p className="font-display text-[1.875rem] font-medium leading-[1.02] tracking-[-0.025em]">
+                      Hi, I&apos;m {NAME}.
+                    </p>
+                    <p className="mt-2 text-[0.9375rem] leading-relaxed text-ink-2">
+                      Ask me anything about Ankit&apos;s videos, tools, experience or how to work with him.
+                    </p>
+                  </div>
+                  <div className="grid gap-2">
+                    {suggestions.map(({ text, icon: SuggestionIcon }) => (
+                      <button
+                        key={text}
+                        type="button"
+                        onClick={() => ask(text)}
+                        className="group flex min-h-12 items-center gap-3 border border-rule px-3 py-2 text-left text-base transition-colors md:text-[0.9375rem] hover:border-accent hover:bg-accent/[0.06]"
+                      >
+                        <span className="icon-tile size-8 shrink-0">
+                          <SuggestionIcon weight="duotone" aria-hidden className="icon-duo size-4" />
+                        </span>
+                        <span className="flex-1">{text}</span>
+                        <ArrowUpRight
+                          weight="bold"
+                          aria-hidden
+                          className="size-3.5 text-ink-2 transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-accent-ink"
+                        />
+                      </button>
+                    ))}
+                  </div>
+                  <div className="flex flex-wrap gap-2 pt-1">
+                    <a
+                      href={site.resume}
+                      download="Ankit-Singh-Resume.pdf"
+                      className="label inline-flex min-h-11 items-center gap-2 bg-ink px-3 text-paper transition-opacity hover:opacity-85"
                     >
-                      {s}
-                    </button>
-                  ))}
-                </div>
+                      <DownloadSimple weight="bold" aria-hidden className="size-3.5" />
+                      Resume
+                    </a>
+                    <a
+                      href={`mailto:${site.email}`}
+                      className="label inline-flex min-h-11 items-center gap-2 border border-rule-strong px-3 transition-colors hover:border-ink"
+                    >
+                      <EnvelopeSimple weight="bold" aria-hidden className="size-3.5" />
+                      Email Ankit
+                    </a>
+                  </div>
+                </>
               ) : null}
 
-              {messages.map((msg) => {
-                const text = msg.parts.filter(isTextUIPart).map((p) => p.text).join("");
-                if (!text) return null;
-                return (
-                  <Bubble key={msg.id} from={msg.role === "user" ? "you" : "bot"}>
-                    {text}
-                  </Bubble>
-                );
-              })}
+              {visible.map((msg, i) =>
+                msg.role === "user" ? (
+                  <UserMessage key={msg.id}>{msg.text}</UserMessage>
+                ) : (
+                  <BotMessage key={msg.id} first={i === 0 || visible[i - 1].role === "user"}>
+                    <Linkified text={msg.text} />
+                  </BotMessage>
+                )
+              )}
 
               {status === "submitted" ? (
-                <Bubble from="bot">
+                <BotMessage first>
                   <span className="sr-only">{NAME} is typing</span>
-                  <span aria-hidden className="pixel-dots inline-flex gap-1">
+                  <span aria-hidden className="pixel-dots inline-flex gap-1 py-1">
                     <span />
                     <span />
                     <span />
                   </span>
-                </Bubble>
+                </BotMessage>
               ) : null}
 
-              {error ? <Bubble from="bot">{fallbackLine(error)}</Bubble> : null}
+              {error ? (
+                <BotMessage first>
+                  <Linkified text={fallbackLine(error)} />
+                </BotMessage>
+              ) : null}
             </div>
 
             <form
@@ -232,48 +371,49 @@ export function Assistant() {
                 e.preventDefault();
                 ask(input);
               }}
-              className="flex items-center gap-2 border-t border-rule px-2 py-2"
+              className="border-t border-rule px-3 pb-3 pt-3"
             >
-              <label htmlFor="pixel-input" className="sr-only">
-                Message {NAME}
-              </label>
-              <input
-                id="pixel-input"
-                ref={field}
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                maxLength={300}
-                autoComplete="off"
-                placeholder="Ask about Ankit…"
-                className="h-11 min-w-0 flex-1 bg-transparent px-2 text-base outline-none placeholder:text-ink-2"
-              />
-              <button
-                type="submit"
-                aria-label="Send"
-                disabled={!input.trim() || busy}
-                className="inline-flex size-11 shrink-0 items-center justify-center bg-accent text-on-accent transition-opacity disabled:opacity-40"
-              >
-                <ArrowUp weight="bold" className="size-4" />
-              </button>
+              <div className="flex items-center gap-1 border border-rule-strong bg-paper-2 pl-3 transition-colors focus-within:border-accent">
+                <label htmlFor="pixel-input" className="sr-only">
+                  Message {NAME}
+                </label>
+                <input
+                  id="pixel-input"
+                  ref={field}
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  maxLength={300}
+                  autoComplete="off"
+                  placeholder="Ask about Ankit…"
+                  className="h-12 min-w-0 flex-1 bg-transparent text-base outline-none placeholder:text-ink-2"
+                />
+                <button
+                  type="submit"
+                  aria-label="Send"
+                  disabled={!input.trim() || busy}
+                  className="m-0.5 inline-flex size-11 shrink-0 items-center justify-center bg-accent text-on-accent transition-[opacity,transform] duration-150 active:scale-95 disabled:opacity-35"
+                >
+                  <ArrowUp weight="bold" className="size-4" />
+                </button>
+              </div>
+              <p className="mt-2 text-xs text-ink-2">
+                {NAME} can get things wrong. For anything important, email Ankit.
+              </p>
             </form>
-            <p className="border-t border-rule px-4 py-2 text-xs text-ink-2">
-              {NAME} can get things wrong. For anything important, email Ankit.
-            </p>
           </m.div>
         ) : null}
       </AnimatePresence>
 
-      <div ref={anchor} className="fixed bottom-2 right-2 z-[70] size-28 md:bottom-4 md:right-4 md:size-36">
+      <div ref={anchor} className="fixed bottom-1 right-1 z-[70] size-[5.5rem] md:bottom-4 md:right-4 md:size-36">
         <AnimatePresence>
           {greeting && !open ? (
             <m.div
               key="hello"
-              initial={{ opacity: 0, transform: "translateX(8px) scale(0.95)" }}
-              animate={{ opacity: 1, transform: "translateX(0px) scale(1)" }}
+              initial={{ opacity: 0, transform: "translateY(6px) scale(0.95)" }}
+              animate={{ opacity: 1, transform: "translateY(0px) scale(1)" }}
               exit={{ opacity: 0, transition: { duration: 0.15 } }}
               transition={{ duration: 0.25, ease }}
-              style={{ transformOrigin: "right center" }}
-              className="absolute bottom-[58%] right-[88%] flex w-max max-w-[15rem] items-center gap-1 border border-rule-strong bg-paper py-1 pl-3 pr-1 shadow-[0_12px_30px_-14px_rgb(0_0_0/0.45)]"
+              className="absolute bottom-full right-1 mb-1 hidden w-max max-w-[min(15rem,calc(100vw-2rem))] origin-bottom-right items-center gap-1 border border-rule-strong bg-paper py-1 pl-3 pr-1 shadow-[0_12px_30px_-14px_rgb(0_0_0/0.45)] md:bottom-[58%] md:right-[88%] md:mb-0 md:flex md:origin-right"
             >
               <button type="button" onClick={() => toggle(true)} className="py-1.5 text-left text-sm">
                 Hi! I&apos;m {NAME}. Ask me about Ankit.
@@ -319,20 +459,5 @@ export function Assistant() {
         />
       </div>
     </>
-  );
-}
-
-function Bubble({ from, children }: { from: "bot" | "you"; children: React.ReactNode }) {
-  return (
-    <div className={cn("flex", from === "you" && "justify-end")}>
-      <p
-        className={cn(
-          "max-w-[85%] whitespace-pre-wrap px-3 py-2 text-base leading-relaxed",
-          from === "you" ? "bg-accent text-on-accent" : "bg-paper-2 text-ink"
-        )}
-      >
-        {children}
-      </p>
-    </div>
   );
 }
