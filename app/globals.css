@@ -1,0 +1,778 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ------------------------------------------------------------------
+   Tokens. One accent (resume blue #2188BB) on warm paper or deep ink.
+   accent-ink is the AA-safe accent for small text on each base.
+   ------------------------------------------------------------------ */
+:root {
+  --paper: #f3efe6;
+  --paper-2: #e9e3d6;
+  --ink: #15140f;
+  --ink-2: #5e5a52;
+  --rule: rgb(21 20 15 / 0.16);
+  --rule-strong: rgb(21 20 15 / 0.42);
+  --accent: #2188bb;
+  --accent-ink: #18678d; /* AA on both paper (5.4:1) and paper-2 bands (4.9:1) */
+  --on-accent: #15140f;
+  --paper-fixed: #f3efe6;
+
+  --ease-out: cubic-bezier(0.2, 0.7, 0, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --header-h: 3.5rem;
+
+  /* shadcn/ui mapping */
+  --background: var(--paper);
+  --foreground: var(--ink);
+  --muted: var(--paper-2);
+  --muted-foreground: var(--ink-2);
+  --border: var(--rule);
+  --input: var(--rule-strong);
+  --ring: var(--accent);
+  --primary: var(--accent);
+  --primary-foreground: var(--on-accent);
+  --radius: 0px;
+
+  color-scheme: light;
+}
+
+.dark {
+  --paper: #12110f;
+  --paper-2: #1c1a16;
+  --ink: #ece7dc;
+  --ink-2: #9a958a;
+  --rule: rgb(236 231 220 / 0.14);
+  --rule-strong: rgb(236 231 220 / 0.4);
+  --accent: #2188bb;
+  --accent-ink: #4fa9d8;
+  --on-accent: #12110f;
+
+  color-scheme: dark;
+}
+
+@theme inline {
+  --color-paper: var(--paper);
+  --color-paper-2: var(--paper-2);
+  --color-paper-fixed: var(--paper-fixed);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-rule: var(--rule);
+  --color-rule-strong: var(--rule-strong);
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+  --color-on-accent: var(--on-accent);
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+
+  --font-display: var(--font-clash), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, "SFMono-Regular", monospace;
+
+  --ease-out-quint: var(--ease-out);
+  --radius-sm: 0px;
+  --radius-md: 0px;
+  --radius-lg: 0px;
+}
+
+/* ------------------------------------------------------------------
+   Base
+   ------------------------------------------------------------------ */
+@layer base {
+  *,
+  ::before,
+  ::after {
+    border-color: var(--rule);
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    /* Keyboard focus never lands under the fixed header */
+    scroll-padding-top: calc(var(--header-h) + 1rem);
+  }
+
+  /* No double-tap zoom delay on taps */
+  a,
+  button,
+  [role="button"] {
+    touch-action: manipulation;
+  }
+
+  /* Tailwind 4 resets buttons to the default arrow; restore the hand
+     wherever the custom cursor isn't drawn (touch, reduced motion) */
+  button:not(:disabled),
+  [role="button"] {
+    cursor: pointer;
+  }
+
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+
+  p,
+  li {
+    text-wrap: pretty;
+  }
+
+  body {
+    background-color: var(--paper);
+    color: var(--ink);
+    font-family: var(--font-sans);
+    font-size: 1.0625rem;
+    line-height: 1.6;
+    font-feature-settings: "ss01", "cv11";
+  }
+
+  /* Paper grain over everything: a small tiling noise tile, fixed so it
+     doesn't scroll, at a strength you feel more than see. Plain opacity
+     rather than a blend mode, so it costs nothing while scrolling. */
+  body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 60;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size: 180px 180px;
+    opacity: 0.045;
+  }
+  .dark body::after {
+    opacity: 0.055;
+  }
+
+  ::selection {
+    background: var(--accent);
+    color: var(--on-accent);
+  }
+
+  section[id],
+  [data-anchor] {
+    scroll-margin-top: calc(var(--header-h) + 1rem);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+
+  /* Native cursor is hidden only while the custom cursor is active */
+  html.has-custom-cursor,
+  html.has-custom-cursor * {
+    cursor: none !important;
+  }
+}
+
+/* ------------------------------------------------------------------
+   Type and layout primitives
+   ------------------------------------------------------------------ */
+@layer components {
+  /* Strict 4 / 8 / 12 column grid shared by every section and the overlay */
+  .shell {
+    width: 100%;
+    margin-inline: auto;
+    max-width: 1680px;
+    padding-inline: 1rem;
+  }
+  .grid-12 {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    column-gap: 1rem;
+  }
+  @media (min-width: 768px) {
+    .shell {
+      padding-inline: 2rem;
+    }
+    .grid-12 {
+      grid-template-columns: repeat(8, minmax(0, 1fr));
+      column-gap: 1.25rem;
+    }
+  }
+  @media (min-width: 1024px) {
+    .shell {
+      padding-inline: 3rem;
+    }
+    .grid-12 {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      column-gap: 1.5rem;
+    }
+  }
+
+  .label {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    line-height: 1.4;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .display {
+    font-family: var(--font-display);
+    font-weight: 600;
+    letter-spacing: -0.04em;
+    line-height: 0.86;
+  }
+
+  .h2 {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: clamp(2.5rem, 5.4vw, 5.25rem);
+    line-height: 0.98;
+    letter-spacing: -0.03em;
+    text-wrap: balance;
+  }
+
+  .lede {
+    font-family: var(--font-sans);
+    font-weight: 400;
+    font-size: clamp(1.3125rem, 1.75vw, 1.75rem);
+    line-height: 1.3;
+    letter-spacing: -0.02em;
+    text-wrap: pretty;
+  }
+
+  .rule {
+    height: 1px;
+    background: var(--rule);
+  }
+
+  /* Placeholder media: drafting hatch, no gradients pretending to be art */
+  .hatch {
+    background-color: var(--paper-2);
+    background-image: repeating-linear-gradient(
+      -45deg,
+      transparent 0 11px,
+      var(--rule) 11px 12px
+    );
+  }
+
+  .link-underline {
+    background-image: linear-gradient(currentColor, currentColor);
+    background-size: 0% 1px;
+    background-position: 0 100%;
+    background-repeat: no-repeat;
+    transition: background-size 300ms var(--ease-out);
+  }
+  .link-underline:hover,
+  .link-underline:focus-visible {
+    background-size: 100% 1px;
+  }
+
+  /* Outline only. The variable font's glyphs overlap internally (and the
+     tight tracking overlaps letters), so a plain stroke shows those seams.
+     Painting the stroke first and the page-coloured fill over it hides them,
+     leaving half of a 3px stroke as a clean 1.5px outline. */
+  .footer-name {
+    color: var(--paper);
+    -webkit-text-stroke: 3px var(--rule-strong);
+    paint-order: stroke fill;
+    padding-bottom: 0.14em; /* room for the "g" under the tight leading */
+    transition: -webkit-text-stroke-color 400ms var(--ease-out);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    footer:hover .footer-name {
+      -webkit-text-stroke-color: var(--accent);
+    }
+  }
+  .add-note {
+    font-family: var(--font-mono);
+    font-size: 0.75em;
+    letter-spacing: 0.02em;
+    color: var(--accent-ink);
+    white-space: normal;
+  }
+}
+
+/* ------------------------------------------------------------------
+   Hero intro. CSS (not JS) so it starts on first paint, before hydration.
+   ------------------------------------------------------------------ */
+@keyframes rise {
+  from {
+    transform: translate3d(0, var(--rise, 105%), 0);
+  }
+  to {
+    transform: translate3d(0, 0, 0);
+  }
+}
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 0.75rem, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes draw-x {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes lift {
+  from {
+    transform: translate3d(0, 1.5rem, 0);
+  }
+  to {
+    transform: none;
+  }
+}
+
+@keyframes appear {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@layer components {
+  .intro-mask {
+    display: block;
+    overflow: clip;
+    overflow-clip-margin: 0.12em;
+    padding-bottom: 0.06em;
+  }
+  .intro-rise {
+    display: block;
+    animation: rise 500ms var(--ease-out) both;
+    animation-delay: var(--d, 0ms);
+  }
+  .intro-fade {
+    animation: fade-up 450ms var(--ease-out) both;
+    animation-delay: var(--d, 0ms);
+  }
+  .intro-lift {
+    animation: lift 500ms var(--ease-out) both;
+    animation-delay: var(--d, 0ms);
+  }
+  .intro-appear {
+    animation: appear 400ms var(--ease-out) both;
+    animation-delay: var(--d, 0ms);
+  }
+  .intro-rule {
+    transform-origin: left;
+    animation: draw-x 500ms var(--ease-out) both;
+    animation-delay: var(--d, 0ms);
+  }
+
+  /* Hero kinetic type: greeting letters fade up, name letters rise out of
+     their line (.intro-mask clips them) and settle from a slight tilt. */
+  .kinetic-char {
+    display: inline-block;
+    white-space: pre;
+    animation: char-in 320ms var(--ease-out) both;
+    animation-delay: var(--d, 0ms);
+  }
+  /* The name's leading is tighter than its glyphs, so the mask reaches past
+     the line box (negative margins keep the layout) to keep the "g" whole. */
+  .kinetic-line {
+    display: block;
+    overflow: clip;
+    padding-block: 0.12em 0.26em;
+    margin-block: -0.12em -0.26em;
+  }
+  .kinetic-letter {
+    display: inline-block;
+    transform-origin: 0% 100%;
+    animation: letter-rise 650ms var(--ease-out) both;
+    animation-delay: var(--d, 0ms);
+  }
+  .hero-wave {
+    transform-origin: 70% 85%;
+    animation: wave 1400ms var(--ease-in-out) both;
+    animation-delay: var(--d, 0ms);
+  }
+
+  /* Typewriter caret: solid while typing, blinking while it waits, hidden in
+     the server render and under reduced motion (see typed-role.tsx). */
+  .type-caret {
+    display: inline-block;
+    width: 0.07em;
+    height: 0.95em;
+    margin-left: 0.06em;
+    vertical-align: -0.12em;
+    background: var(--accent);
+    transition: opacity 400ms var(--ease-out);
+  }
+  .type-caret[data-state="waiting"],
+  .type-caret[data-state="holding"] {
+    animation: caret-blink 1s steps(1, end) infinite;
+  }
+  .type-caret[data-state="static"] {
+    display: none;
+  }
+}
+
+@keyframes char-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 0.35em, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes letter-rise {
+  from {
+    transform: translate3d(0, 160%, 0) rotate(6deg);
+  }
+  to {
+    transform: none;
+  }
+}
+@keyframes wave {
+  0%,
+  60%,
+  100% {
+    transform: rotate(0deg);
+  }
+  10%,
+  30% {
+    transform: rotate(14deg);
+  }
+  20% {
+    transform: rotate(-8deg);
+  }
+  40% {
+    transform: rotate(-4deg);
+  }
+  50% {
+    transform: rotate(10deg);
+  }
+}
+@keyframes caret-blink {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+/* ------------------------------------------------------------------
+   Hero portrait: fade the cropped edges (both shoulders and the bottom)
+   into the page.
+   ------------------------------------------------------------------ */
+@layer components {
+  .portrait-blend {
+    -webkit-mask-image:
+      linear-gradient(to bottom, #000 72%, transparent 98%),
+      linear-gradient(to right, transparent 0%, #000 14%, #000 86%, transparent 100%);
+    mask-image:
+      linear-gradient(to bottom, #000 72%, transparent 98%),
+      linear-gradient(to right, transparent 0%, #000 14%, #000 86%, transparent 100%);
+    -webkit-mask-composite: source-in;
+    mask-composite: intersect;
+  }
+}
+
+/* ------------------------------------------------------------------
+   Two-tone icons. Phosphor's duotone layer is a 20% copy of the stroke;
+   here it becomes a stronger tint so icons read as coloured, not grey.
+   ------------------------------------------------------------------ */
+@layer components {
+  .icon-duo path[opacity="0.2"] {
+    opacity: 1;
+    fill: var(--icon-fill, color-mix(in oklab, var(--accent) 32%, transparent));
+  }
+  .icon-tile {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: color-mix(in oklab, var(--accent) 12%, transparent);
+    color: var(--accent-ink);
+  }
+}
+
+/* ------------------------------------------------------------------
+   Scroll reveals. RevealObserver adds [data-in]; without JS, all visible.
+   ------------------------------------------------------------------ */
+@layer components {
+  .js .reveal {
+    opacity: 0;
+    transform: translate3d(0, 20px, 0);
+    transition:
+      opacity 500ms var(--ease-out),
+      transform 500ms var(--ease-out);
+    transition-delay: var(--delay, 0s);
+  }
+  .js .reveal[data-in] {
+    opacity: 1;
+    transform: none;
+  }
+
+  .js .mask-word {
+    transform: translate3d(0, 110%, 0);
+    transition: transform 500ms var(--ease-out);
+    transition-delay: calc(var(--i, 0) * 35ms);
+  }
+  .js .mask-words[data-in] .mask-word {
+    transform: none;
+  }
+}
+
+/* Typing dots in the chat (assistant.tsx) */
+@layer components {
+  .pixel-dots span {
+    display: block;
+    width: 6px;
+    height: 6px;
+    background: var(--ink-2);
+    animation: pixel-dot 900ms var(--ease-in-out) infinite;
+  }
+  .pixel-dots span:nth-child(2) {
+    animation-delay: 150ms;
+  }
+  .pixel-dots span:nth-child(3) {
+    animation-delay: 300ms;
+  }
+}
+@keyframes pixel-dot {
+  0%,
+  100% {
+    opacity: 0.3;
+    transform: translateY(0);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(-3px);
+  }
+}
+
+/* ------------------------------------------------------------------
+   Work tiles: wipe up into view (RevealObserver adds [data-in]) and lean
+   toward the cursor (work.tsx sets the transform; this eases it back).
+   The open state reaches 4px past the edges so the phone outline's ring
+   isn't clipped.
+   ------------------------------------------------------------------ */
+@layer components {
+  .tilt {
+    transition: transform 350ms var(--ease-out);
+  }
+  .js .wipe {
+    clip-path: inset(100% 0 0 0);
+    transition: clip-path 900ms var(--ease-out);
+  }
+  .js .wipe[data-in] {
+    clip-path: inset(-4px);
+  }
+}
+
+/* ------------------------------------------------------------------
+   Workflow scenes (workflow-scenes.tsx). Each element's resting style is
+   its finished state; with JS on, a scene whose step is off holds the
+   starting state, and switching the step on plays it from --d.
+   ------------------------------------------------------------------ */
+@layer components {
+  .sv-grow,
+  .sv-type {
+    transform-origin: 0 50%;
+  }
+  .sv-grow-y {
+    transform-origin: 50% 100%;
+  }
+  .sv-dim {
+    opacity: 0.3;
+  }
+  .sv-hide {
+    opacity: 0;
+  }
+  .sv-play {
+    transform: translate3d(86%, 0, 0);
+  }
+
+  .js .scene:not([data-on="true"]) :is(.sv-grow, .sv-type) {
+    transform: scaleX(0);
+  }
+  .js .scene:not([data-on="true"]) .sv-grow-y {
+    transform: scaleY(0);
+  }
+  .js .scene:not([data-on="true"]) :is(.sv-fade, .sv-pop, .sv-in) {
+    opacity: 0;
+  }
+  .js .scene:not([data-on="true"]) :is(.sv-dim, .sv-hide) {
+    opacity: 1;
+  }
+  .js .scene:not([data-on="true"]) .sv-rise {
+    transform: translate3d(0, 100%, 0);
+  }
+  .js .scene:not([data-on="true"]) .sv-play {
+    transform: none;
+  }
+
+  .scene[data-on="true"] .sv-grow {
+    animation: sv-grow 450ms var(--ease-out) both var(--d, 0ms);
+  }
+  .scene[data-on="true"] .sv-type {
+    animation: sv-grow 420ms steps(9, end) both var(--d, 0ms);
+  }
+  .scene[data-on="true"] .sv-grow-y {
+    animation: sv-grow-y 380ms var(--ease-out) both var(--d, 0ms);
+  }
+  .scene[data-on="true"] .sv-fade {
+    animation: sv-fade 300ms var(--ease-out) both var(--d, 0ms);
+  }
+  .scene[data-on="true"] .sv-pop {
+    animation: sv-pop 320ms var(--ease-out) both var(--d, 0ms);
+  }
+  .scene[data-on="true"] .sv-dim {
+    animation: sv-dim 400ms var(--ease-out) both var(--d, 0ms);
+  }
+  .scene[data-on="true"] .sv-hide {
+    animation: sv-hide 260ms var(--ease-out) both var(--d, 0ms);
+  }
+  .scene[data-on="true"] .sv-in {
+    animation: sv-in 450ms var(--ease-out) both var(--d, 0ms);
+  }
+  .scene[data-on="true"] .sv-rise {
+    animation: sv-rise 600ms var(--ease-out) both var(--d, 0ms);
+  }
+  .scene[data-on="true"] .sv-play {
+    animation: sv-play 1800ms var(--ease-in-out) both var(--d, 0ms);
+  }
+}
+
+@keyframes sv-grow {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+@keyframes sv-grow-y {
+  from {
+    transform: scaleY(0);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+@keyframes sv-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes sv-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.85);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes sv-dim {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0.3;
+  }
+}
+@keyframes sv-hide {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+@keyframes sv-in {
+  from {
+    opacity: 0;
+    transform: translate3d(35%, 0, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes sv-rise {
+  from {
+    transform: translate3d(0, 100%, 0);
+  }
+  to {
+    transform: none;
+  }
+}
+@keyframes sv-play {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(86%, 0, 0);
+  }
+}
+
+/* Section numerals drift against the scroll where the browser supports it */
+@keyframes drift {
+  from {
+    transform: translate3d(0, 14%, 0);
+  }
+  to {
+    transform: translate3d(0, -14%, 0);
+  }
+}
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .numeral-drift {
+      animation: drift linear both;
+      animation-timeline: view();
+      animation-range: cover;
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .js .reveal {
+    transform: none;
+  }
+  .js .mask-word {
+    transform: none;
+  }
+}
+
+/* Theme switch: circular reveal from the toggle (see theme-toggle.tsx) */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 1ms !important;
+    animation-delay: 0ms !important;
+    /* otherwise an infinite loop at 1ms flickers instead of stopping */
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+    scroll-behavior: auto !important;
+  }
+}
